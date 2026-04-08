@@ -82,6 +82,7 @@ logs/
 *.pem
 *.key
 *.crt
+*.json.well-known
 
 # ------------------------------
 
@@ -99,3 +100,5 @@ Thumbs.db
 
 coverage/
 .cache/
+gen/
+*.flattened-pom.xml
