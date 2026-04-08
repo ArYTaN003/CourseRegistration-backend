@@ -27,6 +27,7 @@ package-lock.json
 # ------------------------------
 
 srv/src/gen/
+srv/src/main/resources/.well-known
 cds-services.json
 
 # ------------------------------
