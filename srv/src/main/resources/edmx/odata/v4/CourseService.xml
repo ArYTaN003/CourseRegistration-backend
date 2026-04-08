@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+    <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="CourseService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="User" EntityType="CourseService.User"/>
+        <EntitySet Name="Courses" EntityType="CourseService.Courses">
+          <NavigationPropertyBinding Path="instructor" Target="User"/>
+        </EntitySet>
+        <EntitySet Name="Enrollments" EntityType="CourseService.Enrollments">
+          <NavigationPropertyBinding Path="student" Target="User"/>
+          <NavigationPropertyBinding Path="course" Target="Courses"/>
+        </EntitySet>
+        <EntitySet Name="Prerequisites" EntityType="CourseService.Prerequisites">
+          <NavigationPropertyBinding Path="course" Target="Courses"/>
+          <NavigationPropertyBinding Path="prerequisite" Target="Courses"/>
+        </EntitySet>
+        <ActionImport Name="ValidateUser" Action="CourseService.ValidateUser"/>
+        <ActionImport Name="CheckUser" Action="CourseService.CheckUser"/>
+        <ActionImport Name="Logout" Action="CourseService.Logout"/>
+      </EntityContainer>
+      <EntityType Name="User">
+        <Key>
+          <PropertyRef Name="email"/>
+        </Key>
+        <Property Name="email" Type="Edm.String" Nullable="false"/>
+        <Property Name="role" Type="Edm.String"/>
+        <Property Name="password" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="Courses">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="title" Type="Edm.String" MaxLength="100"/>
+        <Property Name="description" Type="Edm.String" MaxLength="500"/>
+        <Property Name="capacity" Type="Edm.Int32"/>
+        <NavigationProperty Name="instructor" Type="CourseService.User">
+          <ReferentialConstraint Property="instructor_email" ReferencedProperty="email"/>
+        </NavigationProperty>
+        <Property Name="instructor_email" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="Enrollments">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <NavigationProperty Name="student" Type="CourseService.User">
+          <ReferentialConstraint Property="student_email" ReferencedProperty="email"/>
+        </NavigationProperty>
+        <Property Name="student_email" Type="Edm.String"/>
+        <NavigationProperty Name="course" Type="CourseService.Courses">
+          <ReferentialConstraint Property="course_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="course_ID" Type="Edm.Guid"/>
+        <Property Name="status" Type="Edm.String" MaxLength="20"/>
+        <Property Name="registeredAt" Type="Edm.DateTimeOffset" Precision="7"/>
+      </EntityType>
+      <EntityType Name="Prerequisites">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <NavigationProperty Name="course" Type="CourseService.Courses">
+          <ReferentialConstraint Property="course_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="course_ID" Type="Edm.Guid"/>
+        <NavigationProperty Name="prerequisite" Type="CourseService.Courses">
+          <ReferentialConstraint Property="prerequisite_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="prerequisite_ID" Type="Edm.Guid"/>
+      </EntityType>
+      <ComplexType Name="CheckUserResult">
+        <Property Name="value" Type="Edm.Boolean"/>
+        <Property Name="email" Type="Edm.String"/>
+        <Property Name="role" Type="Edm.String"/>
+      </ComplexType>
+      <Action Name="ValidateUser" IsBound="false">
+        <Parameter Name="email" Type="Edm.String"/>
+        <Parameter Name="password" Type="Edm.String"/>
+        <Parameter Name="role" Type="Edm.String"/>
+        <ReturnType Type="Edm.Boolean"/>
+      </Action>
+      <Action Name="CheckUser" IsBound="false">
+        <ReturnType Type="CourseService.CheckUserResult"/>
+      </Action>
+      <Action Name="Logout" IsBound="false">
+        <ReturnType Type="Edm.Boolean"/>
+      </Action>
+      <Annotations Target="CourseService.User/email">
+        <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+      </Annotations>
+      <Annotations Target="CourseService.Courses/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CourseService.Courses/instructor_email">
+        <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+      </Annotations>
+      <Annotations Target="CourseService.Enrollments/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CourseService.Enrollments/student_email">
+        <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+      </Annotations>
+      <Annotations Target="CourseService.Enrollments/course_ID">
+        <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+      </Annotations>
+      <Annotations Target="CourseService.EntityContainer/Prerequisites">
+        <Annotation Term="Capabilities.DeleteRestrictions">
+          <Record Type="Capabilities.DeleteRestrictionsType">
+            <PropertyValue Property="Deletable" Bool="false"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.InsertRestrictions">
+          <Record Type="Capabilities.InsertRestrictionsType">
+            <PropertyValue Property="Insertable" Bool="false"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Capabilities.UpdateRestrictions">
+          <Record Type="Capabilities.UpdateRestrictionsType">
+            <PropertyValue Property="Updatable" Bool="false"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CourseService.Prerequisites/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CourseService.Prerequisites/course_ID">
+        <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+      </Annotations>
+      <Annotations Target="CourseService.Prerequisites/prerequisite_ID">
+        <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

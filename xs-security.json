@@ -1,0 +1,36 @@
+{
+  "xsappname": "online-course-registration",
+  "tenant-mode": "dedicated",
+  "description": "Security configuration for Online Course Registration",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Instructor",
+      "description": "Access for instructors"
+    },
+    {
+      "name": "$XSAPPNAME.Student",
+      "description": "Access for students"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "InstructorRole",
+      "description": "Instructor role template",
+      "scope-references": [
+        "$XSAPPNAME.Instructor"
+      ]
+    },
+    {
+      "name": "StudentRole",
+      "description": "Student role template",
+      "scope-references": [
+        "$XSAPPNAME.Student"
+      ]
+    }
+  ],
+  "oauth2-configuration": {
+    "redirect-uris": [
+      "http://localhost:4004/**"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+email,role,password
+john.doe@example.com,student,password123
+jane.smith@example.com,instructor,pass456
+alice.wang@example.com,student,alicepwd
+bob@example.com,instructor,bobpass
+maria.garcia@example.com,student,mariapass
+kevin.lee@example.com,instructor,kevin123

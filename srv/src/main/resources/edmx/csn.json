@@ -1,0 +1,1308 @@
+{
+  "namespace": "onlinecourses",
+  "definitions": {
+    "onlinecourses.User": {
+      "kind": "entity",
+      "elements": {
+        "email": {
+          "@mandatory": true,
+          "key": true,
+          "type": "cds.String",
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "role": {
+          "type": "cds.String"
+        },
+        "password": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "onlinecourses.Courses": {
+      "kind": "entity",
+      "includes": [
+        "cuid"
+      ],
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "title": {
+          "type": "cds.String",
+          "length": 100
+        },
+        "description": {
+          "type": "cds.String",
+          "length": 500
+        },
+        "capacity": {
+          "type": "cds.Integer"
+        },
+        "instructor": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "onlinecourses.User",
+          "keys": [
+            {
+              "ref": [
+                "email"
+              ],
+              "$generatedFieldName": "instructor_email"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "instructor_email": {
+          "type": "cds.String",
+          "@odata.foreignKey4": "instructor",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        }
+      }
+    },
+    "onlinecourses.Enrollments": {
+      "kind": "entity",
+      "includes": [
+        "cuid"
+      ],
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "student": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "onlinecourses.User",
+          "keys": [
+            {
+              "ref": [
+                "email"
+              ],
+              "$generatedFieldName": "student_email"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "student_email": {
+          "type": "cds.String",
+          "@odata.foreignKey4": "student",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "course": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "onlinecourses.Courses",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ],
+              "$generatedFieldName": "course_ID"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "course_ID": {
+          "type": "cds.UUID",
+          "@odata.foreignKey4": "course",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "status": {
+          "type": "cds.String",
+          "length": 20
+        },
+        "registeredAt": {
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "onlinecourses.Prerequisites": {
+      "kind": "entity",
+      "includes": [
+        "cuid"
+      ],
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "course": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "onlinecourses.Courses",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ],
+              "$generatedFieldName": "course_ID"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "course_ID": {
+          "type": "cds.UUID",
+          "@odata.foreignKey4": "course",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "prerequisite": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "onlinecourses.Courses",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ],
+              "$generatedFieldName": "prerequisite_ID"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "prerequisite_ID": {
+          "type": "cds.UUID",
+          "@odata.foreignKey4": "prerequisite",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        }
+      }
+    },
+    "CourseService": {
+      "@source": "course-service.cds",
+      "kind": "service",
+      "@path": "/service"
+    },
+    "CourseService.User": {
+      "kind": "entity",
+      "elements": {
+        "email": {
+          "@mandatory": true,
+          "key": true,
+          "type": "cds.String",
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "role": {
+          "type": "cds.String"
+        },
+        "password": {
+          "type": "cds.String"
+        }
+      },
+      "projection": {
+        "from": {
+          "ref": [
+            "onlinecourses.User"
+          ]
+        }
+      }
+    },
+    "CourseService.ValidateUser": {
+      "kind": "action",
+      "params": {
+        "email": {
+          "type": "cds.String"
+        },
+        "password": {
+          "type": "cds.String"
+        },
+        "role": {
+          "type": "cds.String"
+        }
+      },
+      "returns": {
+        "type": "cds.Boolean"
+      }
+    },
+    "CourseService.CheckUser": {
+      "kind": "action",
+      "returns": {
+        "type": "CheckUserResult"
+      }
+    },
+    "CourseService.Logout": {
+      "kind": "action",
+      "returns": {
+        "type": "cds.Boolean"
+      }
+    },
+    "CourseService.Courses": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "title": {
+          "type": "cds.String",
+          "length": 100
+        },
+        "description": {
+          "type": "cds.String",
+          "length": 500
+        },
+        "capacity": {
+          "type": "cds.Integer"
+        },
+        "instructor": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "CourseService.User",
+          "keys": [
+            {
+              "ref": [
+                "email"
+              ],
+              "$generatedFieldName": "instructor_email"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "instructor_email": {
+          "type": "cds.String",
+          "@odata.foreignKey4": "instructor",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        }
+      },
+      "projection": {
+        "from": {
+          "ref": [
+            "onlinecourses.Courses"
+          ]
+        }
+      }
+    },
+    "CourseService.Enrollments": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "student": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "CourseService.User",
+          "keys": [
+            {
+              "ref": [
+                "email"
+              ],
+              "$generatedFieldName": "student_email"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "student_email": {
+          "type": "cds.String",
+          "@odata.foreignKey4": "student",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "course": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "CourseService.Courses",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ],
+              "$generatedFieldName": "course_ID"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "course_ID": {
+          "type": "cds.UUID",
+          "@odata.foreignKey4": "course",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "status": {
+          "type": "cds.String",
+          "length": 20
+        },
+        "registeredAt": {
+          "type": "cds.Timestamp"
+        }
+      },
+      "projection": {
+        "from": {
+          "ref": [
+            "onlinecourses.Enrollments"
+          ]
+        }
+      }
+    },
+    "CourseService.Prerequisites": {
+      "kind": "entity",
+      "@readonly": true,
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "course": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "CourseService.Courses",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ],
+              "$generatedFieldName": "course_ID"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "course_ID": {
+          "type": "cds.UUID",
+          "@odata.foreignKey4": "course",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "prerequisite": {
+          "@mandatory": true,
+          "@assert.target": true,
+          "type": "cds.Association",
+          "target": "CourseService.Courses",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ],
+              "$generatedFieldName": "prerequisite_ID"
+            }
+          ],
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        },
+        "prerequisite_ID": {
+          "type": "cds.UUID",
+          "@odata.foreignKey4": "prerequisite",
+          "@mandatory": true,
+          "@assert.target": true,
+          "@Common.FieldControl": {
+            "#": "Mandatory"
+          }
+        }
+      },
+      "@Capabilities.DeleteRestrictions.Deletable": false,
+      "@Capabilities.InsertRestrictions.Insertable": false,
+      "@Capabilities.UpdateRestrictions.Updatable": false,
+      "projection": {
+        "from": {
+          "ref": [
+            "onlinecourses.Prerequisites"
+          ]
+        }
+      }
+    },
+    "CheckUserResult": {
+      "kind": "type",
+      "elements": {
+        "value": {
+          "type": "cds.Boolean"
+        },
+        "email": {
+          "type": "cds.String"
+        },
+        "role": {
+          "type": "cds.String"
+        }
+      }
+    },
+    "cds.outbox.Messages": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "timestamp": {
+          "type": "cds.Timestamp"
+        },
+        "target": {
+          "type": "cds.String"
+        },
+        "msg": {
+          "type": "cds.LargeString"
+        },
+        "attempts": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "partition": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "lastError": {
+          "type": "cds.LargeString"
+        },
+        "lastAttemptTimestamp": {
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "type": "cds.Timestamp",
+          "@Core.Computed": true
+        },
+        "status": {
+          "type": "cds.String",
+          "length": 23
+        }
+      }
+    },
+    "Language": {
+      "kind": "type",
+      "doc": "Type for an association to Languages\n\nSee https://cap.cloud.sap/docs/cds/common#type-language",
+      "@title": "{i18n>Language}",
+      "@description": "{i18n>LanguageCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Languages",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ],
+      "@Common.Label": "{i18n>Language}",
+      "@Core.Description": "{i18n>LanguageCode.Description}"
+    },
+    "Currency": {
+      "kind": "type",
+      "doc": "Type for an association to Currencies\n\nSee https://cap.cloud.sap/docs/cds/common#type-currency",
+      "@title": "{i18n>Currency}",
+      "@description": "{i18n>CurrencyCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Currencies",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ],
+      "@Common.Label": "{i18n>Currency}",
+      "@Core.Description": "{i18n>CurrencyCode.Description}"
+    },
+    "Country": {
+      "kind": "type",
+      "doc": "Type for an association to Countries\n\nSee https://cap.cloud.sap/docs/cds/common#type-country",
+      "@title": "{i18n>Country}",
+      "@description": "{i18n>CountryCode.Description}",
+      "type": "cds.Association",
+      "target": "sap.common.Countries",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ],
+      "@Common.Label": "{i18n>Country}",
+      "@Core.Description": "{i18n>CountryCode.Description}"
+    },
+    "Timezone": {
+      "kind": "type",
+      "doc": "Type for an association to Timezones\n\nSee https://cap.cloud.sap/docs/cds/common#type-timezone",
+      "type": "cds.Association",
+      "target": "sap.common.Timezones",
+      "keys": [
+        {
+          "ref": [
+            "code"
+          ]
+        }
+      ]
+    },
+    "sap.common": {
+      "kind": "context",
+      "doc": "Entities to serve the reuse types with extensible code lists\nincluding built-in support for value lists in Fiori."
+    },
+    "sap.common.Locale": {
+      "kind": "type",
+      "doc": "Type for a language code",
+      "@title": "{i18n>LanguageCode}",
+      "type": "cds.String",
+      "length": 14,
+      "@Common.Label": "{i18n>LanguageCode}"
+    },
+    "sap.common.Languages": {
+      "kind": "entity",
+      "doc": "Code list for languages\n\nSee https://cap.cloud.sap/docs/cds/common#entity-languages",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@Common.Text": {
+            "=": "name"
+          },
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Languages.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Languages.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "$localized": true
+    },
+    "sap.common.Countries": {
+      "kind": "entity",
+      "doc": "Code list for countries\n\nSee https://cap.cloud.sap/docs/cds/common#entity-countries",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@title": "{i18n>CountryCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@Common.Label": "{i18n>CountryCode}"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Countries.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Countries.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "$localized": true
+    },
+    "sap.common.Currencies": {
+      "kind": "entity",
+      "doc": "Code list for currencies\n\nSee https://cap.cloud.sap/docs/cds/common#entity-currencies",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@Common.Label": "{i18n>CurrencyCode}"
+        },
+        "symbol": {
+          "@title": "{i18n>CurrencySymbol}",
+          "type": "cds.String",
+          "length": 5,
+          "@Common.Label": "{i18n>CurrencySymbol}"
+        },
+        "minorUnit": {
+          "@title": "{i18n>CurrencyMinorUnit}",
+          "type": "cds.Int16",
+          "@Common.Label": "{i18n>CurrencyMinorUnit}"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Currencies.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "$localized": true
+    },
+    "sap.common.Timezones": {
+      "kind": "entity",
+      "doc": "Code list for time zones\n\nSee https://cap.cloud.sap/docs/cds/common#entity-timezones",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "includes": [
+        "sap.common.CodeList"
+      ],
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@title": "{i18n>TimeZoneCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 100,
+          "@Common.Label": "{i18n>TimeZoneCode}"
+        },
+        "texts": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "sap.common.Timezones.texts",
+          "on": [
+            {
+              "ref": [
+                "texts",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "localized": {
+          "type": "cds.Association",
+          "target": "sap.common.Timezones.texts",
+          "on": [
+            {
+              "ref": [
+                "localized",
+                "code"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "code"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "localized",
+                "locale"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$user",
+                "locale"
+              ]
+            }
+          ]
+        }
+      },
+      "$localized": true
+    },
+    "sap.common.CodeList": {
+      "kind": "aspect",
+      "doc": "Aspect for a code list with name and description\n\nSee https://cap.cloud.sap/docs/cds/common#aspect-codelist",
+      "@cds.autoexpose": true,
+      "@cds.persistence.skip": "if-unused",
+      "@UI.Identification": [
+        {
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.odata.valuelist": true,
+      "elements": {
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": true,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        }
+      }
+    },
+    "sap.common.TextsAspect": {
+      "kind": "aspect",
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        }
+      }
+    },
+    "cuid": {
+      "kind": "aspect",
+      "doc": "Aspect for entities with canonical universal IDs\n\nSee https://cap.cloud.sap/docs/cds/common#aspect-cuid",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        }
+      }
+    },
+    "managed": {
+      "kind": "aspect",
+      "doc": "Aspect to capture changes by user and name\n\nSee https://cap.cloud.sap/docs/cds/common#aspect-managed",
+      "elements": {
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp",
+          "@Core.Computed": true,
+          "@Common.Label": "{i18n>CreatedAt}"
+        },
+        "createdBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@Core.Immutable": true,
+          "@title": "{i18n>CreatedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "cds.String",
+          "length": 255,
+          "@Core.Computed": true,
+          "@Common.Label": "{i18n>CreatedBy}",
+          "@Core.Description": "{i18n>UserID.Description}"
+        },
+        "modifiedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedAt}",
+          "@readonly": true,
+          "type": "cds.Timestamp",
+          "@Core.Computed": true,
+          "@Common.Label": "{i18n>ChangedAt}"
+        },
+        "modifiedBy": {
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@UI.HiddenFilter": true,
+          "@UI.ExcludeFromNavigationContext": true,
+          "@title": "{i18n>ChangedBy}",
+          "@readonly": true,
+          "@description": "{i18n>UserID.Description}",
+          "type": "cds.String",
+          "length": 255,
+          "@Core.Computed": true,
+          "@Common.Label": "{i18n>ChangedBy}",
+          "@Core.Description": "{i18n>UserID.Description}"
+        }
+      }
+    },
+    "temporal": {
+      "kind": "aspect",
+      "doc": "Aspect for entities with temporal data\n\nSee https://cap.cloud.sap/docs/cds/common#aspect-temporal",
+      "elements": {
+        "validFrom": {
+          "@cds.valid.from": true,
+          "type": "cds.Timestamp"
+        },
+        "validTo": {
+          "@cds.valid.to": true,
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "User": {
+      "kind": "type",
+      "doc": "Canonical user ID",
+      "@title": "{i18n>UserID}",
+      "@description": "{i18n>UserID.Description}",
+      "type": "cds.String",
+      "length": 255,
+      "@Common.Label": "{i18n>UserID}",
+      "@Core.Description": "{i18n>UserID.Description}"
+    },
+    "sap.common.Languages.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@Common.Text": {
+            "=": "name"
+          },
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        }
+      }
+    },
+    "sap.common.Countries.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CountryCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@Common.Label": "{i18n>CountryCode}"
+        }
+      }
+    },
+    "sap.common.Currencies.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>CurrencyCode}",
+          "@Common.Text": {
+            "=": "name"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@Common.Label": "{i18n>CurrencyCode}"
+        }
+      }
+    },
+    "sap.common.Timezones.texts": {
+      "kind": "entity",
+      "@odata.draft.enabled": false,
+      "includes": [
+        "sap.common.TextsAspect"
+      ],
+      "elements": {
+        "locale": {
+          "@title": "{i18n>LanguageCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 14,
+          "@Common.Label": "{i18n>LanguageCode}"
+        },
+        "name": {
+          "@title": "{i18n>Name}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 255,
+          "@Common.Label": "{i18n>Name}"
+        },
+        "descr": {
+          "@title": "{i18n>Description}",
+          "localized": null,
+          "type": "cds.String",
+          "length": 1000,
+          "@Common.Label": "{i18n>Description}"
+        },
+        "code": {
+          "@odata.containment.ignore": true,
+          "@title": "{i18n>TimeZoneCode}",
+          "key": true,
+          "type": "cds.String",
+          "length": 100,
+          "@Common.Label": "{i18n>TimeZoneCode}"
+        }
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v6.3.0",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}

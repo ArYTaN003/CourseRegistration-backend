@@ -1,0 +1,101 @@
+# ------------------------------
+
+# Node.js dependencies
+
+# ------------------------------
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ------------------------------
+
+# Environment files
+
+# ------------------------------
+
+.env
+.env.*
+!.env.example
+
+# ------------------------------
+
+# CAP / CDS
+
+# ------------------------------
+
+.srv/src/gen/
+cds-services.json
+
+# ------------------------------
+
+# SQLite database files
+
+# ------------------------------
+
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# ------------------------------
+
+# Build / Deployment artifacts
+
+# ------------------------------
+
+dist/
+build/
+target/
+out/
+mta_archives/
+*.mtar
+
+# ------------------------------
+
+# IDE / Editor files
+
+# ------------------------------
+
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# ------------------------------
+
+# Logs
+
+# ------------------------------
+
+logs/
+*.log
+
+# ------------------------------
+
+# Security / Keys (IMPORTANT)
+
+# ------------------------------
+
+*.pem
+*.key
+*.crt
+
+# ------------------------------
+
+# OS files
+
+# ------------------------------
+
+Thumbs.db
+
+# ------------------------------
+
+# Misc
+
+# ------------------------------
+
+coverage/
+.cache/
