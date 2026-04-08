@@ -101,4 +101,4 @@ Thumbs.db
 coverage/
 .cache/
 gen/
-*.flattened-pom.xml
+srv/*.flattened-pom.xml
