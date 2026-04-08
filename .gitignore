@@ -102,3 +102,4 @@ coverage/
 .cache/
 gen/
 srv/.flattened-pom.xml
+.flattened-pom.xml
