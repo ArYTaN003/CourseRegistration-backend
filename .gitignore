@@ -51,6 +51,7 @@ target/
 out/
 mta_archives/
 *.mtar
+mta.yaml
 
 # ------------------------------
 
