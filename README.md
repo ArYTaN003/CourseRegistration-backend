@@ -1,1 +1,1 @@
-# courseregistration.CourseregistrationUI
+# CourseRegistration-Backend
